@@ -1,245 +1,284 @@
-﻿@model ButcherShop.Entity.Entities.ContactMessage
+@model ButcherShop.Entity.Entities.ContactMessage
 @{
     ViewBag.Title = "Mesaj Detayı";
 }
 
-@section styles {
-    <style>
-        .message-detail-card {
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .message-header {
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-            .message-header h3 {
-                margin-bottom: 1rem;
-            }
-
-        .info-row {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-            .info-item i {
-                color: #dc3545;
-                width: 20px;
-            }
-
-        .message-content {
-            background: #f8f9fa;
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border-left: 4px solid #dc3545;
-        }
-
-        .reply-section {
-            background: #fff;
-            border: 2px solid #dee2e6;
-            border-radius: 10px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-            .reply-section h4 {
-                margin-bottom: 1.5rem;
-            }
-
-        .form-control:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-        }
-
-        .admin-note-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 2rem;
-        }
-    </style>
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")"><i class="fas fa-home"></i> Ana Sayfa</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">İletişim Mesajları</a></li>
+    <li class="breadcrumb-item active">Mesaj Detayı</li>
 }
 
-<div class="container-fluid">
-    <!-- Back Button -->
-    <div class="mb-4">
-        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i> Geri Dön
-        </a>
-    </div>
-
-    <!-- Success/Error Messages -->
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle me-2"></i>
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["Warning"] != null)
-    {
-        <div class="alert alert-warning alert-dismissible fade show">
-            <i class="fas fa-exclamation-triangle me-2"></i>
-            @TempData["Warning"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            <i class="fas fa-times-circle me-2"></i>
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    <!-- Message Details -->
-    <div class="message-detail-card">
-        <div class="message-header">
-            <div class="d-flex justify-content-between align-items-start">
-                <h3>
-                    <i class="fas fa-envelope me-2"></i> Mesaj Detayı
-                    @if (!Model.IsRead)
-                    {
-                        <span class="badge bg-danger ms-2">Yeni</span>
-                    }
-                </h3>
-                @using (Html.BeginForm("Delete", "ContactMessage", new { id = Model.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Bu mesajı silmek istediğinizden emin misiniz?');" }))
-                {
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash me-2"></i> Mesajı Sil
-                    </button>
-                }
-            </div>
-
-            <div class="info-row mt-3">
-                <div class="info-item">
-                    <i class="fas fa-user"></i>
-                    <strong>İsim:</strong> @Model.Name
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-envelope"></i>
-                    <strong>E-posta:</strong>
-                    <a href="mailto:@Model.Email">@Model.Email</a>
-                </div>
-                @if (!string.IsNullOrEmpty(Model.Phone))
-                {
-                    <div class="info-item">
-                        <i class="fas fa-phone"></i>
-                        <strong>Telefon:</strong>
-                        <a href="tel:@Model.Phone">@Model.Phone</a>
-                    </div>
-                }
-            </div>
-
-            <div class="info-row">
-                <div class="info-item">
-                    <i class="far fa-clock"></i>
-                    <strong>Gönderim Tarihi:</strong> @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
-                </div>
-                @if (Model.ReadDate.HasValue)
-                {
-                    <div class="info-item">
-                        <i class="fas fa-eye"></i>
-                        <strong>Okunma Tarihi:</strong> @Model.ReadDate.Value.ToString("dd.MM.yyyy HH:mm")
-                    </div>
-                }
-            </div>
-
-            @if (!string.IsNullOrEmpty(Model.Subject))
-            {
-                <div class="info-row">
-                    <div class="info-item">
-                        <i class="fas fa-tag"></i>
-                        <strong>Konu:</strong> @Model.Subject
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Admin Note -->
-        @if (!string.IsNullOrEmpty(Model.AdminNote))
+<section class="content">
+    <div class="container-fluid">
+        <!-- Success/Error/Warning Messages -->
+        @if (TempData["Success"] != null)
         {
-            <div class="admin-note-box">
-                <strong><i class="fas fa-sticky-note me-2"></i> Admin Notu:</strong>
-                <p class="mb-0 mt-2">@Model.AdminNote</p>
+            <div class="alert alert-success alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="icon fas fa-check"></i>
+                @TempData["Success"]
             </div>
         }
 
-        <!-- Message Content -->
-        <div class="message-content">
-            <h5 class="mb-3"><i class="fas fa-comment me-2"></i> Mesaj İçeriği:</h5>
-            <p style="white-space: pre-wrap;">@Model.Message</p>
+        @if (TempData["Warning"] != null)
+        {
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="icon fas fa-exclamation-triangle"></i>
+                @TempData["Warning"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <i class="icon fas fa-ban"></i>
+                @TempData["Error"]
+            </div>
+        }
+
+        <!-- Back Button -->
+        <div class="mb-3">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i> Geri Dön
+            </a>
+            @using (Html.BeginForm("Delete", "ContactMessage", new { id = Model.Id }, FormMethod.Post, new { @class = "d-inline float-right", onsubmit = "return confirm('Bu mesajı silmek istediğinizden emin misiniz?');" }))
+            {
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash mr-2"></i> Mesajı Sil
+                </button>
+            }
+        </div>
+
+        <div class="row">
+            <!-- Message Details Card -->
+            <div class="col-md-8">
+                <div class="card card-primary card-outline">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-envelope mr-2"></i>
+                            Mesaj Detayı
+                            @if (!Model.IsRead)
+                            {
+                                <span class="badge badge-danger ml-2">Yeni</span>
+                            }
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Sender Information -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="info-box bg-light">
+                                    <span class="info-box-icon bg-primary"><i class="fas fa-user"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Gönderen</span>
+                                        <span class="info-box-number">@Model.Name</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-box bg-light">
+                                    <span class="info-box-icon bg-info"><i class="fas fa-envelope"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">E-posta</span>
+                                        <span class="info-box-number">
+                                            <a href="mailto:@Model.Email">@Model.Email</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            @if (!string.IsNullOrEmpty(Model.Phone))
+                            {
+                                <div class="col-md-6">
+                                    <div class="info-box bg-light">
+                                        <span class="info-box-icon bg-success"><i class="fas fa-phone"></i></span>
+                                        <div class="info-box-content">
+                                            <span class="info-box-text">Telefon</span>
+                                            <span class="info-box-number">
+                                                <a href="tel:@Model.Phone">@Model.Phone</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-md-6">
+                                <div class="info-box bg-light">
+                                    <span class="info-box-icon bg-warning"><i class="far fa-clock"></i></span>
+                                    <div class="info-box-content">
+                                        <span class="info-box-text">Gönderim Tarihi</span>
+                                        <span class="info-box-number">
+                                            <small>@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.Subject))
+                        {
+                            <div class="form-group">
+                                <label><i class="fas fa-tag mr-1"></i> Konu</label>
+                                <p class="form-control-static">
+                                    <strong>@Model.Subject</strong>
+                                </p>
+                            </div>
+                        }
+
+                        <!-- Admin Note -->
+                        @if (!string.IsNullOrEmpty(Model.AdminNote))
+                        {
+                            <div class="callout callout-warning">
+                                <h5><i class="fas fa-sticky-note mr-2"></i> Admin Notu</h5>
+                                <p>@Model.AdminNote</p>
+                            </div>
+                        }
+
+                        <!-- Message Content -->
+                        <div class="callout callout-info">
+                            <h5><i class="fas fa-comment mr-2"></i> Mesaj İçeriği</h5>
+                            <p style="white-space: pre-wrap;">@Model.Message</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status & Reply Card -->
+            <div class="col-md-4">
+                <!-- Status Card -->
+                <div class="card card-widget widget-user-2">
+                    <div class="widget-user-header @(Model.IsRead ? "bg-success" : "bg-danger")">
+                        <h3 class="widget-user-username">Mesaj Durumu</h3>
+                        <h5 class="widget-user-desc">
+                            @if (Model.IsRead)
+                            {
+                                <i class="fas fa-check-circle mr-1"></i><text>Okundu</text>
+                            }
+                            else
+                            {
+                                <i class="fas fa-envelope mr-1"></i><text>Okunmadı</text>
+                            }
+                        </h5>
+                    </div>
+                    <div class="card-footer p-0">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <span class="nav-link">
+                                    <i class="fas fa-clock mr-2"></i> Gönderildi
+                                    <span class="float-right text-muted">
+                                        <small>@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</small>
+                                    </span>
+                                </span>
+                            </li>
+                            @if (Model.ReadDate.HasValue)
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link">
+                                        <i class="fas fa-eye mr-2"></i> Okundu
+                                        <span class="float-right text-muted">
+                                            <small>@Model.ReadDate.Value.ToString("dd.MM.yyyy HH:mm")</small>
+                                        </span>
+                                    </span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-bolt mr-2"></i> Hızlı İşlemler
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <a href="mailto:@Model.Email" class="btn btn-info btn-block">
+                            <i class="fas fa-envelope mr-2"></i> E-posta Gönder
+                        </a>
+                        @if (!string.IsNullOrEmpty(Model.Phone))
+                        {
+                            <a href="tel:@Model.Phone" class="btn btn-success btn-block">
+                                <i class="fas fa-phone mr-2"></i> Telefon Ara
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Reply Section -->
-        <div class="reply-section">
-            <h4><i class="fas fa-reply me-2"></i> Yanıt Gönder</h4>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-warning">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-reply mr-2"></i> Yanıt Gönder
+                        </h3>
+                    </div>
 
-            @using (Html.BeginForm("Reply", "ContactMessage", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                @Html.Hidden("id", Model.Id)
+                    @using (Html.BeginForm("Reply", "ContactMessage", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", Model.Id)
 
-                <div class="mb-3">
-                    <label for="replyMessage" class="form-label">
-                        <i class="fas fa-paper-plane me-1"></i> Email Yanıtı
-                    </label>
-                    <textarea class="form-control" id="replyMessage" name="replyMessage"
-                              rows="6" placeholder="Kullanıcıya gönderilecek email yanıtı..."></textarea>
-                    <small class="text-muted">
-                        Bu mesaj <strong>@Model.Email</strong> adresine gönderilecektir.
-                    </small>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="replyMessage">
+                                    <i class="fas fa-paper-plane mr-1"></i> Email Yanıtı
+                                </label>
+                                <textarea class="form-control" id="replyMessage" name="replyMessage"
+                                          rows="6" placeholder="Kullanıcıya gönderilecek email yanıtı..." required></textarea>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Bu mesaj <strong>@Model.Email</strong> adresine gönderilecektir.
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="adminNote">
+                                    <i class="fas fa-sticky-note mr-1"></i> Admin Notu (İsteğe Bağlı)
+                                </label>
+                                <textarea class="form-control" id="adminNote" name="adminNote"
+                                          rows="3" placeholder="Sadece admin panelinde görünen not...">@Model.AdminNote</textarea>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    Bu not sadece admin panelinde görünür, kullanıcıya gönderilmez.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane mr-2"></i> Yanıtı Gönder
+                            </button>
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-eraser mr-2"></i> Temizle
+                            </button>
+                        </div>
+                    }
                 </div>
-
-                <div class="mb-3">
-                    <label for="adminNote" class="form-label">
-                        <i class="fas fa-sticky-note me-1"></i> Admin Notu (İsteğe Bağlı)
-                    </label>
-                    <textarea class="form-control" id="adminNote" name="adminNote"
-                              rows="3" placeholder="Sadece admin panelinde görünen not...">@Model.AdminNote</textarea>
-                    <small class="text-muted">
-                        Bu not sadece admin panelinde görünür, kullanıcıya gönderilmez.
-                    </small>
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane me-2"></i> Yanıtı Gönder
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="history.back()">
-                        <i class="fas fa-times me-2"></i> İptal
-                    </button>
-                </div>
-            }
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 @section scripts {
     <script>
-        // Auto-resize textareas
-        document.querySelectorAll('textarea').forEach(function(textarea) {
-            textarea.addEventListener('input', function() {
+        $(function () {
+            // Auto dismiss alerts after 5 seconds
+            setTimeout(function() {
+                $('.alert').fadeOut('slow');
+            }, 5000);
+
+            // Auto-resize textareas
+            $('textarea').on('input', function () {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
             });
