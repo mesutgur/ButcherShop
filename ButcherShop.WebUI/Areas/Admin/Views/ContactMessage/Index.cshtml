@@ -3,6 +3,8 @@
     ViewBag.Title = "İletişim Mesajları";
     var filter = ViewBag.Filter as string ?? "all";
     var unreadCount = ViewBag.UnreadCount as int? ?? 0;
+    var readCount = ViewBag.ReadCount as int? ?? 0;
+    var totalCount = ViewBag.TotalCount as int? ?? 0;
 }
 
 @section Breadcrumb {
@@ -48,7 +50,7 @@
                     İletişim Mesajları
                 </h3>
                 <div class="card-tools">
-                    <span class="badge badge-primary">Toplam: @Model.Count</span>
+                    <span class="badge badge-primary">Toplam: @totalCount</span>
                     @if (unreadCount > 0)
                     {
                         <span class="badge badge-danger ml-2">Okunmamış: @unreadCount</span>
@@ -63,7 +65,7 @@
                         <a class="nav-link @(filter == "all" ? "active" : "")"
                            href="@Url.Action("Index", new { filter = "all" })">
                             <i class="fas fa-list"></i> Tümü
-                            <span class="badge badge-secondary badge-pill ml-1">@Model.Count</span>
+                            <span class="badge badge-secondary badge-pill ml-1">@totalCount</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -80,7 +82,7 @@
                         <a class="nav-link @(filter == "read" ? "active" : "")"
                            href="@Url.Action("Index", new { filter = "read" })">
                             <i class="fas fa-envelope-open"></i> Okunmuş
-                            <span class="badge badge-success badge-pill ml-1">@(Model.Count - unreadCount)</span>
+                            <span class="badge badge-success badge-pill ml-1">@readCount</span>
                         </a>
                     </li>
                 </ul>

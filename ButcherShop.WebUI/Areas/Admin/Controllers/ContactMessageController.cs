@@ -23,23 +23,29 @@ namespace ButcherShop.WebUI.Areas.Admin.Controllers
         // GET: Admin/ContactMessage
         public ActionResult Index(string filter = "all")
         {
-            var messages = _contactMessageService.GetAll(m => !m.IsDeleted);
+            var allMessages = _contactMessageService.GetAll(m => !m.IsDeleted);
+            var unreadCount = allMessages.Count(m => !m.IsRead);
+            var readCount = allMessages.Count(m => m.IsRead);
+            var totalCount = allMessages.Count;
 
             // Filtreleme
+            var messages = allMessages;
             switch (filter?.ToLower())
             {
                 case "unread":
-                    messages = messages.Where(m => !m.IsRead).ToList();
+                    messages = allMessages.Where(m => !m.IsRead).ToList();
                     break;
                 case "read":
-                    messages = messages.Where(m => m.IsRead).ToList();
+                    messages = allMessages.Where(m => m.IsRead).ToList();
                     break;
                 default: // all
                     break;
             }
 
             ViewBag.Filter = filter;
-            ViewBag.UnreadCount = _contactMessageService.GetUnreadCount();
+            ViewBag.UnreadCount = unreadCount;
+            ViewBag.ReadCount = readCount;
+            ViewBag.TotalCount = totalCount;
 
             return View(messages);
         }
