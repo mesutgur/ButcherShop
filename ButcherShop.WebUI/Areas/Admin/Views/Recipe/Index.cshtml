@@ -1,0 +1,206 @@
+﻿@model List<ButcherShop.Entity.Entities.Recipe>
+@{
+    ViewBag.Title = "Tarif Yönetimi";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item active">Tarifler</li>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tarif Listesi</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Create")" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Yeni Tarif Ekle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover" id="recipeTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Görsel</th>
+                            <th>Tarif Başlığı</th>
+                            <th>Yazar</th>
+                            <th style="width: 100px;">Zorluk</th>
+                            <th style="width: 100px;">Süre</th>
+                            <th style="width: 80px;">Görüntülenme</th>
+                            <th style="width: 80px;">Durum</th>
+                            <th style="width: 180px;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var recipe in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(recipe.ImageUrl))
+                                        {
+                                            <img src="@recipe.ImageUrl" alt="@recipe.Title" class="img-thumbnail" style="max-width: 60px; max-height: 60px;" />
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Yok</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@recipe.Title</strong><br />
+                                        <small class="text-muted">
+                                            @if (!string.IsNullOrEmpty(recipe.Description) && recipe.Description.Length > 80)
+                                            {
+                                                @recipe.Description.Substring(0, 80)<text>...</text>
+                                            }
+                                            else
+                                            {
+                                                @recipe.Description
+                                            }
+                                        </small>
+                                    </td>
+                                    <td>
+                                        @if (recipe.Author != null)
+                                        {
+                                            <span class="badge badge-info">@recipe.Author.UserName</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @switch (recipe.DifficultyLevel)
+                                        {
+                                            case "Kolay":
+                                                <span class="badge badge-success">Kolay</span>
+                                                break;
+                                            case "Orta":
+                                                <span class="badge badge-warning">Orta</span>
+                                                break;
+                                            case "Zor":
+                                                <span class="badge badge-danger">Zor</span>
+                                                break;
+                                            default:
+                                                <span class="badge badge-secondary">@recipe.DifficultyLevel</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <small>
+                                            <i class="far fa-clock"></i> @(recipe.PreparationTime + recipe.CookingTime) dk
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-primary">
+                                            <i class="fas fa-eye"></i> @recipe.ViewCount
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm toggle-status @(recipe.IsActive ? "btn-success" : "btn-secondary")"
+                                                data-id="@recipe.Id">
+                                            @if (recipe.IsActive)
+                                            {
+                                                <i class="fas fa-check"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times"></i>
+                                            }
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Details", new { id = recipe.Id })" class="btn btn-primary btn-sm" title="Detay">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", new { id = recipe.Id })" class="btn btn-info btn-sm" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", new { id = recipe.Id })" class="btn btn-danger btn-sm" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle"></i> Henüz tarif eklenmemiş.
+                                        <a href="@Url.Action("Create")" class="alert-link">Hemen ekleyin!</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // DataTable
+            $('#recipeTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                }
+            });
+
+            // Toggle Status
+            $('.toggle-status').on('click', function () {
+                var btn = $(this);
+                var recipeId = btn.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("ToggleStatus")',
+                    type: 'POST',
+                    data: { id: recipeId },
+                    success: function (response) {
+                        if (response.success) {
+                            if (response.isActive) {
+                                btn.removeClass('btn-secondary').addClass('btn-success');
+                                btn.html('<i class="fas fa-check"></i>');
+                            } else {
+                                btn.removeClass('btn-success').addClass('btn-secondary');
+                                btn.html('<i class="fas fa-times"></i>');
+                            }
+                            toastr.success('Durum güncellendi.');
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

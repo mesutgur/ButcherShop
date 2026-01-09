@@ -1,0 +1,323 @@
+﻿@model List<ButcherShop.Entity.Entities.Recipe>
+@{
+    ViewBag.Title = "Tarifler";
+    var searchTerm = ViewBag.SearchTerm as string;
+    var selectedDifficulty = ViewBag.SelectedDifficulty as string;
+    var sort = ViewBag.Sort as string;
+    var recipeCount = ViewBag.RecipeCount as int? ?? 0;
+}
+
+@section styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, var(--dark-color) 0%, #34495e 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+                font-weight: 700;
+                margin: 0;
+            }
+
+        .filter-toolbar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+            .search-box input {
+                padding-right: 45px;
+            }
+
+            .search-box button {
+                position: absolute;
+                right: 5px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: none;
+                background: var(--primary-color);
+                color: white;
+                padding: 0.5rem 1rem;
+                border-radius: 5px;
+            }
+
+        .recipe-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+            .recipe-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
+
+            .recipe-card img {
+                height: 250px;
+                object-fit: cover;
+                transition: all 0.3s;
+            }
+
+            .recipe-card:hover img {
+                transform: scale(1.05);
+            }
+
+            .recipe-card .card-body {
+                padding: 1.5rem;
+            }
+
+        .recipe-meta {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .recipe-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+            .recipe-meta-item i {
+                color: var(--primary-color);
+            }
+
+        .difficulty-filter {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: var(--dark-color);
+        }
+
+            .difficulty-btn:hover {
+                border-color: var(--primary-color);
+                color: var(--primary-color);
+            }
+
+            .difficulty-btn.active {
+                background: var(--primary-color);
+                border-color: var(--primary-color);
+                color: white;
+            }
+
+        .no-recipes {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+            .no-recipes i {
+                font-size: 5rem;
+                color: var(--secondary-color);
+                margin-bottom: 1rem;
+            }
+
+        @@media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-book me-2"></i> Yemek Tarifleri</h1>
+        <p class="mb-0">Lezzetli tarifler ile sofralarınızı renklendirin</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Toolbar -->
+    <div class="filter-toolbar">
+        <div class="row align-items-center mb-3">
+            <div class="col-md-6 mb-3 mb-md-0">
+                <div class="search-box">
+                    <form method="get" action="@Url.Action("Index")">
+                        @if (!string.IsNullOrEmpty(selectedDifficulty))
+                        {
+                            <input type="hidden" name="difficulty" value="@selectedDifficulty" />
+                        }
+                        <input type="text" class="form-control" name="search"
+                               placeholder="Tarif ara..." value="@searchTerm">
+                        <button type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="sortSelect">
+                    <option value="">Sırala</option>
+                    <option value="popular" @(sort == "popular" ? "selected" : "")>En Popüler</option>
+                    <option value="time_asc" @(sort == "time_asc" ? "selected" : "")>Süre (Kısa-Uzun)</option>
+                    <option value="time_desc" @(sort == "time_desc" ? "selected" : "")>Süre (Uzun-Kısa)</option>
+                </select>
+            </div>
+            <div class="col-md-3 text-end">
+                <strong>@recipeCount</strong> tarif bulundu
+            </div>
+        </div>
+
+        <!-- Difficulty Filter -->
+        <div class="row">
+            <div class="col-12">
+                <label class="mb-2"><i class="fas fa-filter me-2"></i> Zorluk Seviyesi:</label>
+                <div class="difficulty-filter">
+                    <a href="@Url.Action("Index")" class="difficulty-btn @(string.IsNullOrEmpty(selectedDifficulty) ? "active" : "")">
+                        Tümü
+                    </a>
+                    <a href="@Url.Action("Index", new { difficulty = "Kolay", search = searchTerm })"
+                       class="difficulty-btn @(selectedDifficulty == "Kolay" ? "active" : "")">
+                        Kolay
+                    </a>
+                    <a href="@Url.Action("Index", new { difficulty = "Orta", search = searchTerm })"
+                       class="difficulty-btn @(selectedDifficulty == "Orta" ? "active" : "")">
+                        Orta
+                    </a>
+                    <a href="@Url.Action("Index", new { difficulty = "Zor", search = searchTerm })"
+                       class="difficulty-btn @(selectedDifficulty == "Zor" ? "active" : "")">
+                        Zor
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipes Grid -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var recipe in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card recipe-card">
+                        <div class="position-relative">
+                            <img src="@(!string.IsNullOrEmpty(recipe.ImageUrl) ? recipe.ImageUrl : "https://via.placeholder.com/400x300?text=" + recipe.Title)"
+                                 class="card-img-top" alt="@recipe.Title">
+                            <span class="badge bg-@(recipe.DifficultyLevel == "Kolay" ? "success" : recipe.DifficultyLevel == "Orta" ? "warning" : "danger") position-absolute"
+                                  style="top: 10px; right: 10px; padding: 0.5rem 1rem;">
+                                @recipe.DifficultyLevel
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@recipe.Title</h5>
+                            <p class="card-text text-muted small">
+                                @if (!string.IsNullOrEmpty(recipe.Description))
+                                {
+                                    if (recipe.Description.Length > 100)
+                                    {
+                                        @recipe.Description.Substring(0, 100)<text>...</text>
+                                    }
+                                    else
+                                    {
+                                        @recipe.Description
+                                    }
+                                }
+                            </p>
+
+                            <div class="recipe-meta">
+                                <div class="recipe-meta-item">
+                                    <i class="far fa-clock"></i>
+                                    <span>@(recipe.PreparationTime + recipe.CookingTime) dk</span>
+                                </div>
+                                <div class="recipe-meta-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>@recipe.ServingSize kişi</span>
+                                </div>
+                                <div class="recipe-meta-item">
+                                    <i class="fas fa-eye"></i>
+                                    <span>@recipe.ViewCount</span>
+                                </div>
+                            </div>
+
+                            <a href="@Url.Action("Details", new { id = recipe.Id })" class="btn btn-danger w-100 mt-2">
+                                <i class="fas fa-arrow-right me-1"></i> Tarifi Gör
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-recipes">
+            <i class="fas fa-book-open"></i>
+            <h3>Tarif Bulunamadı</h3>
+            <p class="text-muted">
+                @if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    <text>"@searchTerm" araması için sonuç bulunamadı.</text>
+                }
+                else if (!string.IsNullOrEmpty(selectedDifficulty))
+                {
+                    <text>@selectedDifficulty seviyesinde tarif bulunmamaktadır.</text>
+                }
+                else
+                {
+                    <text>Henüz tarif eklenmemiş.</text>
+                }
+            </p>
+            <a href="@Url.Action("Index")" class="btn btn-primary-custom mt-3">
+                <i class="fas fa-home me-2"></i> Tüm Tarifler
+            </a>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        // Sıralama değişince formu gönder
+        $('#sortSelect').on('change', function () {
+            var sort = $(this).val();
+            var url = '@Url.Action("Index")';
+            var params = [];
+
+            @if (!string.IsNullOrEmpty(selectedDifficulty))
+            {
+                <text>params.push('difficulty=@selectedDifficulty');</text>
+            }
+
+            @if (!string.IsNullOrEmpty(searchTerm))
+            {
+                <text>params.push('search=@searchTerm');</text>
+            }
+
+            if (sort) {
+                params.push('sort=' + sort);
+            }
+
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            window.location.href = url;
+        });
+    </script>
+}

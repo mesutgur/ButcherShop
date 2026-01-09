@@ -1,0 +1,383 @@
+﻿@{
+    ViewBag.Title = "Anasayfa";
+    var featuredProducts = ViewBag.FeaturedProducts as List<ButcherShop.Entity.Entities.Product>;
+    var categories = ViewBag.Categories as List<ButcherShop.Entity.Entities.Category>;
+    var recentRecipes = ViewBag.RecentRecipes as List<ButcherShop.Entity.Entities.Recipe>;
+}
+
+@section styles {
+    <style>
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(44, 62, 80, 0.95) 0%, rgba(52, 73, 94, 0.95) 100%), url('https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=1600');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+            .hero-section h1 {
+                font-size: 3.5rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }
+
+            .hero-section p {
+                font-size: 1.3rem;
+                margin-bottom: 2rem;
+                opacity: 0.9;
+            }
+
+        /* Category Cards */
+        .category-card {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 250px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+            .category-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+
+            .category-card img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: all 0.3s;
+            }
+
+            .category-card:hover img {
+                transform: scale(1.1);
+            }
+
+            .category-card .overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+                padding: 2rem 1.5rem 1rem;
+                color: white;
+            }
+
+                .category-card .overlay h3 {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin: 0;
+                }
+
+        /* Product Cards */
+        .product-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+            .product-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
+
+            .product-card img {
+                height: 200px;
+                object-fit: cover;
+                transition: all 0.3s;
+            }
+
+            .product-card:hover img {
+                transform: scale(1.05);
+            }
+
+            .product-card .card-body {
+                padding: 1.5rem;
+            }
+
+            .product-card .price {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--primary-color);
+            }
+
+            .product-card .badge {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                padding: 0.5rem 1rem;
+            }
+
+        /* Recipe Cards */
+        .recipe-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            height: 100%;
+        }
+
+            .recipe-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
+
+            .recipe-card img {
+                height: 250px;
+                object-fit: cover;
+            }
+
+            .recipe-card .card-body {
+                padding: 1.5rem;
+            }
+
+        /* Info Section */
+        .info-section {
+            background: var(--light-color);
+            padding: 4rem 0;
+        }
+
+        .info-box {
+            text-align: center;
+            padding: 2rem;
+        }
+
+            .info-box i {
+                font-size: 3rem;
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+
+            .info-box h4 {
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+            }
+
+        @@media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+
+            .hero-section p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1>Taze ve Kaliteli Et Ürünleri</h1>
+        <p>Sağlıklı yaşam için doğru adres! Taze et ürünleri ve lezzetli tarifler</p>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-primary-custom btn-lg">
+            <i class="fas fa-shopping-basket me-2"></i> Ürünleri İncele
+        </a>
+    </div>
+</section>
+
+<!-- Kategoriler -->
+@if (categories != null && categories.Any())
+{
+    <section class="py-5">
+        <div class="container">
+            <div class="section-title">
+                <h2>Ürün Kategorileri</h2>
+                <p>Geniş ürün yelpazemize göz atın</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var category in categories.Take(4))
+                {
+                    <div class="col-lg-3 col-md-6">
+                        <a href="@Url.Action("Index", "Product", new { categoryId = category.Id })" class="text-decoration-none">
+                            <div class="category-card">
+                                @{
+                                    // ✅ Resim URL'ini düzgün şekilde oluştur
+                                    var categoryImgUrl = "https://via.placeholder.com/400x250?text=" + category.Name;
+
+                                    if (!string.IsNullOrEmpty(category.ImageUrl))
+                                    {
+                                        // Eğer URL 'http' ile başlıyorsa direkt kullan
+                                        if (category.ImageUrl.StartsWith("http"))
+                                        {
+                                            categoryImgUrl = category.ImageUrl;
+                                        }
+                                        else
+                                        {
+                                            // Değilse Url.Content ile çözümle
+                                            categoryImgUrl = Url.Content(category.ImageUrl);
+                                        }
+                                    }
+                                }
+                                <img src="@categoryImgUrl"
+                                     alt="@category.Name"
+                                     onerror="this.src='https://via.placeholder.com/400x250?text=@category.Name'">
+                                <div class="overlay">
+                                    <h3>@category.Name</h3>
+                                    <p class="mb-0 small">@category.Description</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Öne Çıkan Ürünler -->
+@if (featuredProducts != null && featuredProducts.Any())
+{
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="section-title">
+                <h2>Öne Çıkan Ürünler</h2>
+                <p>En çok tercih edilen ürünlerimiz</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var product in featuredProducts)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card product-card">
+                            <div class="position-relative">
+                                @{
+                                    var mainImg = product.ProductImages?.FirstOrDefault(pi => pi.IsMainImage && pi.IsActive && !pi.IsDeleted);
+                                    var imgUrl = mainImg?.ImageUrl ?? product.ImageUrl ?? "https://via.placeholder.com/400x300?text=" + product.Name;
+                                }
+                                <img src="@imgUrl" class="card-img-top" alt="@product.Name">
+                                <span class="badge bg-danger"><i class="fas fa-star me-1"></i> Öne Çıkan</span>
+                            </div>
+                            <div class="card-body">
+                                <span class="badge bg-info mb-2">@product.Category?.Name</span>
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text text-muted small">
+                                    @if (!string.IsNullOrEmpty(product.Description))
+                                    {
+                                        if (product.Description.Length > 80)
+                                        {
+                                            @product.Description.Substring(0, 80)<text>...</text>
+                                        }
+                                        else
+                                        {
+                                            @product.Description
+                                        }
+                                    }
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="price">@product.Price.ToString("C2")</span>
+                                    <a href="@Url.Action("Details", "Product", new { id = product.Id })" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-arrow-right me-1"></i> Detay
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "Product")" class="btn btn-primary-custom">
+                    <i class="fas fa-th me-2"></i> Tüm Ürünleri Gör
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Bilgi Kutuları -->
+<section class="info-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="info-box">
+                    <i class="fas fa-truck"></i>
+                    <h4>Hızlı Teslimat</h4>
+                    <p class="text-muted">Aynı gün içinde kapınızda</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <i class="fas fa-certificate"></i>
+                    <h4>Kalite Garantisi</h4>
+                    <p class="text-muted">%100 taze ve kaliteli</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-box">
+                    <i class="fas fa-headset"></i>
+                    <h4>7/24 Destek</h4>
+                    <p class="text-muted">Her zaman yanınızdayız</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Son Tarifler -->
+@if (recentRecipes != null && recentRecipes.Any())
+{
+    <section class="py-5">
+        <div class="container">
+            <div class="section-title">
+                <h2>Son Eklenen Tarifler</h2>
+                <p>Lezzetli tarifler ile sofralarınızı renklendirin</p>
+            </div>
+
+            <div class="row g-4">
+                @foreach (var recipe in recentRecipes)
+                {
+                    <div class="col-lg-4 col-md-6">
+                        <div class="card recipe-card">
+                            <img src="@(!string.IsNullOrEmpty(recipe.ImageUrl) ? recipe.ImageUrl : "https://via.placeholder.com/400x300?text=" + recipe.Title)"
+                                 class="card-img-top" alt="@recipe.Title">
+                            <div class="card-body">
+                                <h5 class="card-title">@recipe.Title</h5>
+                                <p class="card-text text-muted small">
+                                    @if (!string.IsNullOrEmpty(recipe.Description))
+                                    {
+                                        if (recipe.Description.Length > 100)
+                                        {
+                                            @recipe.Description.Substring(0, 100)<text>...</text>
+                                        }
+                                        else
+                                        {
+                                            @recipe.Description
+                                        }
+                                    }
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">
+                                        <i class="far fa-clock me-1"></i> @(recipe.PreparationTime + recipe.CookingTime) dk
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i> @recipe.ServingSize kişi
+                                    </small>
+                                    <span class="badge bg-@(recipe.DifficultyLevel == "Kolay" ? "success" : recipe.DifficultyLevel == "Orta" ? "warning" : "danger")">
+                                        @recipe.DifficultyLevel
+                                    </span>
+                                </div>
+                                <a href="@Url.Action("Details", "Recipe", new { id = recipe.Id })" class="btn btn-outline-danger w-100">
+                                    <i class="fas fa-book me-1"></i> Tarifi Gör
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "Recipe")" class="btn btn-primary-custom">
+                    <i class="fas fa-book me-2"></i> Tüm Tarifleri Gör
+                </a>
+            </div>
+        </div>
+    </section>
+}

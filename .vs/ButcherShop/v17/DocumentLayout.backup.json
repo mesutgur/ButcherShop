@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C726180A-E4F5-4B35-A9E8-7F0430AD7255}|ButcherShop.WebUI\\ButcherShop.WebUI.csproj|c:\\users\\mesut g\u00FCr\\desktop\\project\\butchershop\\butchershop.webui\\areas\\admin\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C726180A-E4F5-4B35-A9E8-7F0430AD7255}|ButcherShop.WebUI\\ButcherShop.WebUI.csproj|solutionrelative:butchershop.webui\\areas\\admin\\views\\product\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C726180A-E4F5-4B35-A9E8-7F0430AD7255}|ButcherShop.WebUI\\ButcherShop.WebUI.csproj|C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\butchershop.webui\\areas\\admin\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C726180A-E4F5-4B35-A9E8-7F0430AD7255}|ButcherShop.WebUI\\ButcherShop.WebUI.csproj|solutionrelative:butchershop.webui\\areas\\admin\\views\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\ButcherShop.WebUI\\Areas\\Admin\\Views\\Product\\Index.cshtml",
+              "RelativeDocumentMoniker": "ButcherShop.WebUI\\Areas\\Admin\\Views\\Product\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\ButcherShop.WebUI\\Areas\\Admin\\Views\\Product\\Index.cshtml",
+              "RelativeToolTip": "ButcherShop.WebUI\\Areas\\Admin\\Views\\Product\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-09T20:28:49.741Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\ButcherShop.WebUI\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "ButcherShop.WebUI\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Mesut G\u00DCR\\Desktop\\Project\\ButcherShop\\ButcherShop.WebUI\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "ButcherShop.WebUI\\Areas\\Admin\\Views\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-09T20:28:17.842Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

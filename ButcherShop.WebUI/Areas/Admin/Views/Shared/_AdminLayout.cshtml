@@ -1,0 +1,248 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - Kasap Dükkanı Admin</title>
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="nav-link">Anasayfa</a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="@Url.Action("Index", "Home", new { area = "" })" class="nav-link" target="_blank">Siteyi Görüntüle</a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Fullscreen -->
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <!-- User Account -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                        <span class="dropdown-item dropdown-header">@User.Identity.Name</span>
+                        <div class="dropdown-divider"></div>
+                        <a href="@Url.Action("Index", "Manage", new { area = "" })" class="dropdown-item">
+                            <i class="fas fa-user-cog mr-2"></i> Profil Ayarları
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="document.getElementById('logoutForm').submit();" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Çıkış Yap
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="brand-link">
+                <i class="fas fa-store-alt brand-image"></i>
+                <span class="brand-text font-weight-light">Altın Kasap</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <i class="fas fa-user-circle fa-2x text-white"></i>
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block">@User.Identity.Name</a>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="nav-link">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <!-- Kategori Yönetimi -->
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Category", new { area = "Admin" })" class="nav-link">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>Kategoriler</p>
+                            </a>
+                        </li>
+
+                        <!-- Ürün Yönetimi -->
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Product", new { area = "Admin" })" class="nav-link">
+                                <i class="nav-icon fas fa-box"></i>
+                                <p>Ürünler</p>
+                            </a>
+                        </li>
+
+                        <!-- Tarif Yönetimi -->
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Recipe", new { area = "Admin" })" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>Tarifler</p>
+                            </a>
+                        </li>
+
+                        <!-- Kullanıcı Yönetimi -->
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    Kullanıcı Yönetimi
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", "User", new { area = "Admin" })" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Kullanıcılar</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("Index", "Role", new { area = "Admin" })" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Roller</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Ayarlar -->
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Settings", new { area = "Admin" })" class="nav-link">
+                                <i class="nav-icon fas fa-cog"></i>
+                                <p>Ayarlar</p>
+                            </a>
+                        </li>
+
+                        <!-- Diğer menü öğeleri... -->
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ContactMessage" ? "active" : "")"
+                               href="@Url.Action("Index", "ContactMessage", new { area = "Admin" })">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>İletişim Mesajları</span>
+                                @{
+                                    // Okunmamış mesaj sayısı (dinamik olarak yüklenebilir)
+                                    var unreadCount = 0; // Bunu ViewBag veya service'den çekebilirsiniz
+                                    if (unreadCount > 0)
+                                    {
+                                        <span class="badge bg-danger ms-auto">@unreadCount</span>
+                                    }
+                                }
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">@ViewBag.Title</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                @*@RenderSection("Breadcrumb", required: false)*@
+                                @RenderSection("styles", required: false)
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.content-header -->
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+        <!-- Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2025 Kasap Dükkanı.</strong> Tüm hakları saklıdır.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+    <!-- Logout Form -->
+    @using (Html.BeginForm("LogOff", "Account", new { area = "" }, FormMethod.Post, new { id = "logoutForm" }))
+    {
+        @Html.AntiForgeryToken()
+    }
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/admin-antiforgery.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    <!-- Toastr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+
+
+    @RenderSection("Scripts", required: false)
+
+    <!-- Global Anti-Forgery Token (AJAX POST'lar için) -->
+    <div id="__af" style="display:none">
+        @Html.AntiForgeryToken()
+    </div>
+</body>
+
+</html>

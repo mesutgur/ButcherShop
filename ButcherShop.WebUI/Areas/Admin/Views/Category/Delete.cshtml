@@ -1,0 +1,75 @@
+﻿@model ButcherShop.Entity.Entities.Category
+@{
+    ViewBag.Title = "Kategori Sil";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Kategoriler</a></li>
+    <li class="breadcrumb-item active">Sil</li>
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Kategori Silme Onayı</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Uyarı!</strong> Bu kategoriyi silmek üzeresiniz. Bu işlem geri alınamaz.
+                </div>
+
+                <dl class="row">
+                    <dt class="col-sm-4">Kategori Adı:</dt>
+                    <dd class="col-sm-8"><strong>@Model.Name</strong></dd>
+
+                    <dt class="col-sm-4">Açıklama:</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Description) ? "Yok" : Model.Description)</dd>
+
+                    <dt class="col-sm-4">Sıralama:</dt>
+                    <dd class="col-sm-8">@Model.DisplayOrder</dd>
+
+                    <dt class="col-sm-4">Durum:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge badge-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">Pasif</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Oluşturma Tarihi:</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+                </dl>
+
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="text-center mt-3">
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-thumbnail" style="max-width: 300px;" />
+                    </div>
+                }
+            </div>
+
+            <div class="card-footer">
+                @using (Html.BeginForm("Delete", "Category", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Evet, Sil
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> İptal
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,312 @@
+﻿@model ButcherShop.Entity.Entities.Product
+@{
+    ViewBag.Title = "Ürün Detayı";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Ürünler</a></li>
+    <li class="breadcrumb-item active">Detay</li>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@Model.Name</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @*<div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded" />
+                            }
+                            else
+                            {
+                                <div class="alert alert-secondary text-center">
+                                    <i class="fas fa-image fa-3x"></i>
+                                    <p class="mt-2">Görsel Yok</p>
+                                </div>
+                            }
+                        </div>*@
+                    <div class="col-md-4">
+                        @{
+                            var mainImage = Model.ProductImages?.FirstOrDefault(pi => pi.IsMainImage && pi.IsActive && !pi.IsDeleted);
+                            var displayImageUrl = mainImage?.ImageUrl ?? Model.ImageUrl;
+                        }
+                        @if (!string.IsNullOrEmpty(displayImageUrl))
+                        {
+                            <div class="position-relative">
+                                <img src="@displayImageUrl" alt="@Model.Name" class="img-fluid rounded shadow" />
+                                @if (mainImage != null)
+                                {
+                                    <span class="badge badge-primary position-absolute" style="top: 10px; right: 10px;">
+                                        <i class="fas fa-star"></i> Ana Görsel
+                                    </span>
+                                }
+                            </div>
+                            if (Model.ProductImages != null && Model.ProductImages.Any(pi => pi.IsActive && !pi.IsDeleted))
+                            {
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-images"></i>
+                                        @Model.ProductImages.Count(pi => pi.IsActive && !pi.IsDeleted) görsel mevcut
+                                    </small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary text-center">
+                                <i class="fas fa-image fa-3x"></i>
+                                <p class="mt-2">Görsel Yok</p>
+                            </div>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <dl class="row">
+                            <dt class="col-sm-4">Kategori:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.Category != null)
+                                {
+                                    <span class="badge badge-info">@Model.Category.Name</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-4">Fiyat:</dt>
+                            <dd class="col-sm-8">
+                                <strong class="text-success">@Model.Price.ToString("C2")</strong> / @Model.Unit
+                            </dd>
+
+                            <dt class="col-sm-4">Stok:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.StockQuantity > 10)
+                                {
+                                    <span class="badge badge-success">@Model.StockQuantity @Model.Unit</span>
+                                }
+                                else if (Model.StockQuantity > 0)
+                                {
+                                    <span class="badge badge-warning">@Model.StockQuantity @Model.Unit</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">Stokta Yok</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-4">Öne Çıkan:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.IsFeatured)
+                                {
+                                    <span class="badge badge-warning"><i class="fas fa-star"></i> Evet</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Hayır</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-4">Durum:</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge badge-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Pasif</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-4">Oluşturma:</dt>
+                            <dd class="col-sm-8">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                            @if (Model.ModifiedDate.HasValue)
+                            {
+                                <dt class="col-sm-4">Son Güncelleme:</dt>
+                                <dd class="col-sm-8">@Model.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm")</dd>
+                            }
+                        </dl>
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <hr />
+                            <h5>Açıklama:</h5>
+                            <p>@Model.Description</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Listeye Dön
+                </a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger float-right">
+                    <i class="fas fa-trash"></i> Sil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Ürün Görselleri</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Manage", "ProductImage", new { id = Model.Id })" class="btn btn-primary btn-sm">
+                        <i class="fas fa-images"></i> Görselleri Yönet
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @{
+                    var productImages = Model.ProductImages?.Where(pi => pi.IsActive && !pi.IsDeleted).OrderBy(pi => pi.DisplayOrder).ToList();
+                }
+                @if (productImages != null && productImages.Any())
+                {
+                    <div class="row">
+                        @foreach (var image in productImages.Take(4))
+                        {
+                            <div class="col-6 mb-2">
+                                <div class="position-relative">
+                                    <img src="@image.ImageUrl" class="img-thumbnail" style="width: 100%; height: 100px; object-fit: cover;" />
+                                    @if (image.IsMainImage)
+                                    {
+                                        <span class="badge badge-primary position-absolute" style="top: 5px; right: 5px;">
+                                            <i class="fas fa-star"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    if (productImages.Count > 4)
+                    {
+                        <div class="text-center mt-2">
+                            <small class="text-muted">+@(productImages.Count - 4) görsel daha</small>
+                        </div>
+                    }
+                    <hr />
+                    <a href="@Url.Action("Manage", "ProductImage", new { id = Model.Id })" class="btn btn-outline-primary btn-block btn-sm">
+                        <i class="fas fa-images"></i> Tüm Görselleri Görüntüle (@productImages.Count)
+                    </a>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-images fa-3x mb-3 text-secondary"></i>
+                        <p class="mb-2">Henüz görsel eklenmemiş.</p>
+                        <a href="@Url.Action("Manage", "ProductImage", new { id = Model.Id })" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Görsel Ekle
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">İlgili Tarifler</h3>
+                <div class="card-tools">
+                    @if (ViewBag.RelatedRecipes != null && ((List<ButcherShop.Entity.Entities.Recipe>)ViewBag.RelatedRecipes).Any())
+                    {
+                        <span class="badge badge-primary">
+                            @((ViewBag.RelatedRecipes as List<ButcherShop.Entity.Entities.Recipe>).Count) Tarif
+                        </span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.RelatedRecipes != null && ((List<ButcherShop.Entity.Entities.Recipe>)ViewBag.RelatedRecipes).Any())
+                {
+                    <div class="list-group">
+                        @foreach (var recipe in (List<ButcherShop.Entity.Entities.Recipe>)ViewBag.RelatedRecipes)
+                        {
+                            <a href="@Url.Action("Details", "Recipe", new { id = recipe.Id })" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">
+                                            <i class="fas fa-book text-primary"></i> @recipe.Title
+                                        </h6>
+                                        <p class="mb-1 text-muted small">
+                                            @if (!string.IsNullOrEmpty(recipe.Description))
+                                            {
+                                                if (recipe.Description.Length > 80)
+                                                {
+                                                    @recipe.Description.Substring(0, 80)<text>...</text>
+                                                }
+                                                else
+                                                {
+                                                    @recipe.Description
+                                                }
+                                            }
+                                        </p>
+                                        <small class="text-muted">
+                                            <i class="far fa-clock"></i> @(recipe.PreparationTime + recipe.CookingTime) dk
+                                            <span class="mx-1">|</span>
+                                            <i class="fas fa-users"></i> @recipe.ServingSize kişi
+                                            <span class="mx-1">|</span>
+                                            @switch (recipe.DifficultyLevel)
+                                            {
+                                                case "Kolay":
+                                                    <span class="badge badge-success badge-sm">Kolay</span>
+                                                    break;
+                                                case "Orta":
+                                                    <span class="badge badge-warning badge-sm">Orta</span>
+                                                    break;
+                                                case "Zor":
+                                                    <span class="badge badge-danger badge-sm">Zor</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge badge-secondary badge-sm">@recipe.DifficultyLevel</span>
+                                                    break;
+                                            }
+                                        </small>
+                                    </div>
+                                    <div>
+                                        @if (recipe.IsActive)
+                                        {
+                                            <span class="badge badge-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Pasif</span>
+                                        }
+                                        <br />
+                                        <small class="text-muted">
+                                            <i class="fas fa-eye"></i> @recipe.ViewCount
+                                        </small>
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-book fa-3x mb-3 text-secondary"></i>
+                        <p class="mb-0">Bu ürünü kullanan tarif bulunmamaktadır.</p>
+                        <a href="@Url.Action("Create", "Recipe")" class="btn btn-sm btn-success mt-2">
+                            <i class="fas fa-plus"></i> Yeni Tarif Ekle
+                        </a>
+                    </div>
+                }
+            </div>
+            @if (ViewBag.RelatedRecipes != null && ((List<ButcherShop.Entity.Entities.Recipe>)ViewBag.RelatedRecipes).Any())
+            {
+                <div class="card-footer">
+                    <a href="@Url.Action("Index", "Recipe")" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-list"></i> Tüm Tarifleri Gör
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

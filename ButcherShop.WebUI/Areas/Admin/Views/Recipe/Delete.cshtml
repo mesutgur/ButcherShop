@@ -1,0 +1,129 @@
+﻿@model ButcherShop.Entity.Entities.Recipe
+@{
+    ViewBag.Title = "Tarif Sil";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Tarifler</a></li>
+    <li class="breadcrumb-item active">Sil</li>
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Tarif Silme Onayı</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Uyarı!</strong> Bu tarifi silmek üzeresiniz. Bu işlem geri alınamaz.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" />
+                        }
+                        else
+                        {
+                            <div class="alert alert-secondary text-center">
+                                <i class="fas fa-image fa-3x"></i>
+                                <p class="mt-2">Görsel Yok</p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="col-md-8">
+                        <h4>@Model.Title</h4>
+
+                        @if (!string.IsNullOrEmpty(Model.Description))
+                        {
+                            <p class="text-muted">@Model.Description</p>
+                        }
+
+                        <hr />
+
+                        <dl class="row">
+                            <dt class="col-sm-5">Yazar:</dt>
+                            <dd class="col-sm-7">
+                                @if (Model.Author != null)
+                                {
+                                    <span class="badge badge-info">@Model.Author.UserName</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">Hazırlık Süresi:</dt>
+                            <dd class="col-sm-7">@Model.PreparationTime dakika</dd>
+
+                            <dt class="col-sm-5">Pişirme Süresi:</dt>
+                            <dd class="col-sm-7">@Model.CookingTime dakika</dd>
+
+                            <dt class="col-sm-5">Kaç Kişilik:</dt>
+                            <dd class="col-sm-7">@Model.ServingSize kişi</dd>
+
+                            <dt class="col-sm-5">Zorluk:</dt>
+                            <dd class="col-sm-7">
+                                @switch (Model.DifficultyLevel)
+                                {
+                                    case "Kolay":
+                                        <span class="badge badge-success">Kolay</span>
+                                        break;
+                                    case "Orta":
+                                        <span class="badge badge-warning">Orta</span>
+                                        break;
+                                    case "Zor":
+                                        <span class="badge badge-danger">Zor</span>
+                                        break;
+                                    default:
+                                        <span class="badge badge-secondary">@Model.DifficultyLevel</span>
+                                        break;
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">Görüntülenme:</dt>
+                            <dd class="col-sm-7">
+                                <span class="badge badge-primary">
+                                    <i class="fas fa-eye"></i> @Model.ViewCount
+                                </span>
+                            </dd>
+
+                            <dt class="col-sm-5">Durum:</dt>
+                            <dd class="col-sm-7">
+                                @if (Model.IsActive)
+                                {
+                                    <span class="badge badge-success">Aktif</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Pasif</span>
+                                }
+                            </dd>
+
+                            <dt class="col-sm-5">Oluşturma Tarihi:</dt>
+                            <dd class="col-sm-7">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                @using (Html.BeginForm("Delete", "Recipe", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Evet, Sil
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> İptal
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

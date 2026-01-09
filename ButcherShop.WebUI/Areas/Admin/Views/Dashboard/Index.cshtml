@@ -1,0 +1,151 @@
+﻿@model List<ButcherShop.Entity.Entities.Product>
+@{
+    ViewBag.Title = "Dashboard";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item active">Dashboard</li>
+}
+
+<!-- Info boxes -->
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>@ViewBag.CategoryCount</h3>
+                <p>Kategoriler</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-list"></i>
+            </div>
+            <a href="@Url.Action("Index", "Category")" class="small-box-footer">
+                Detaylar <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-success">
+            <div class="inner">
+                <h3>@ViewBag.ProductCount</h3>
+                <p>Ürünler</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <a href="@Url.Action("Index", "Product")" class="small-box-footer">
+                Detaylar <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>@ViewBag.RecipeCount</h3>
+                <p>Tarifler</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <a href="@Url.Action("Index", "Recipe")" class="small-box-footer">
+                Detaylar <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>0</h3>
+                <p>Siparişler</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a href="#" class="small-box-footer">
+                Yakında <i class="fas fa-arrow-circle-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Son Eklenen Ürünler -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Son Eklenen Ürünler</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ürün Adı</th>
+                            <th>Kategori</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>Durum</th>
+                            <th>Eklenme Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td>@product.Id</td>
+                                    <td>@product.Name</td>
+                                    <td>
+                                        @if (product.Category != null)
+                                        {
+                                            <span class="badge badge-info">@product.Category.Name</span>
+                                        }
+                                    </td>
+                                    <td>@product.Price.ToString("C2")</td>
+                                    <td>
+                                        @if (product.StockQuantity > 10)
+                                        {
+                                            <span class="badge badge-success">@product.StockQuantity @product.Unit</span>
+                                        }
+                                        else if (product.StockQuantity > 0)
+                                        {
+                                            <span class="badge badge-warning">@product.StockQuantity @product.Unit</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Stokta Yok</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (product.IsActive)
+                                        {
+                                            <span class="badge badge-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Pasif</span>
+                                        }
+                                    </td>
+                                    <td>@product.CreatedDate.ToString("dd.MM.yyyy")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">Henüz ürün eklenmemiş.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

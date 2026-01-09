@@ -1,0 +1,117 @@
+﻿@model List<ButcherShop.WebUI.Areas.Admin.Models.RoleViewModel>
+@{
+    ViewBag.Title = "Rol Yönetimi";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item active">Roller</li>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Rol Listesi</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Create")" class="btn btn-success btn-sm">
+                        <i class="fas fa-plus"></i> Yeni Rol Ekle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover" id="roleTable">
+                    <thead>
+                        <tr>
+                            <th>Rol Adı</th>
+                            <th style="width: 150px;">Kullanıcı Sayısı</th>
+                            <th style="width: 200px;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var role in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@role.Name</strong><br />
+                                        <small class="text-muted">ID: @role.Id</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge badge-info">@role.UserCount Kullanıcı</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Details", new { id = role.Id })" class="btn btn-info btn-sm" title="Detaylar">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", new { id = role.Id })" class="btn btn-warning btn-sm" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @if (!new[] { "Admin", "Editor", "Customer" }.Contains(role.Name))
+                                            {
+                                                <a href="@Url.Action("Delete", new { id = role.Id })" class="btn btn-danger btn-sm" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle"></i> Henüz rol eklenmemiş.
+                                        <a href="@Url.Action("Create")" class="alert-link">Hemen ekleyin!</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // DataTable
+            $('#roleTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                }
+            });
+        });
+    </script>
+}
+
+

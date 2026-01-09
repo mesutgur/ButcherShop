@@ -1,0 +1,248 @@
+﻿@model ButcherShop.Entity.Entities.ContactMessage
+@{
+    ViewBag.Title = "Mesaj Detayı";
+}
+
+@section styles {
+    <style>
+        .message-detail-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .message-header {
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+            .message-header h3 {
+                margin-bottom: 1rem;
+            }
+
+        .info-row {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+            .info-item i {
+                color: #dc3545;
+                width: 20px;
+            }
+
+        .message-content {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #dc3545;
+        }
+
+        .reply-section {
+            background: #fff;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+            .reply-section h4 {
+                margin-bottom: 1.5rem;
+            }
+
+        .form-control:focus {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        .admin-note-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Geri Dön
+        </a>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Warning"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @TempData["Warning"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-times-circle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Message Details -->
+    <div class="message-detail-card">
+        <div class="message-header">
+            <div class="d-flex justify-content-between align-items-start">
+                <h3>
+                    <i class="fas fa-envelope me-2"></i> Mesaj Detayı
+                    @if (!Model.IsRead)
+                    {
+                        <span class="badge bg-danger ms-2">Yeni</span>
+                    }
+                </h3>
+                @using (Html.BeginForm("Delete", "ContactMessage", new { id = Model.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Bu mesajı silmek istediğinizden emin misiniz?');" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i> Mesajı Sil
+                    </button>
+                }
+            </div>
+
+            <div class="info-row mt-3">
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <strong>İsim:</strong> @Model.Name
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-envelope"></i>
+                    <strong>E-posta:</strong>
+                    <a href="mailto:@Model.Email">@Model.Email</a>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Phone))
+                {
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <strong>Telefon:</strong>
+                        <a href="tel:@Model.Phone">@Model.Phone</a>
+                    </div>
+                }
+            </div>
+
+            <div class="info-row">
+                <div class="info-item">
+                    <i class="far fa-clock"></i>
+                    <strong>Gönderim Tarihi:</strong> @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+                </div>
+                @if (Model.ReadDate.HasValue)
+                {
+                    <div class="info-item">
+                        <i class="fas fa-eye"></i>
+                        <strong>Okunma Tarihi:</strong> @Model.ReadDate.Value.ToString("dd.MM.yyyy HH:mm")
+                    </div>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Subject))
+            {
+                <div class="info-row">
+                    <div class="info-item">
+                        <i class="fas fa-tag"></i>
+                        <strong>Konu:</strong> @Model.Subject
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Admin Note -->
+        @if (!string.IsNullOrEmpty(Model.AdminNote))
+        {
+            <div class="admin-note-box">
+                <strong><i class="fas fa-sticky-note me-2"></i> Admin Notu:</strong>
+                <p class="mb-0 mt-2">@Model.AdminNote</p>
+            </div>
+        }
+
+        <!-- Message Content -->
+        <div class="message-content">
+            <h5 class="mb-3"><i class="fas fa-comment me-2"></i> Mesaj İçeriği:</h5>
+            <p style="white-space: pre-wrap;">@Model.Message</p>
+        </div>
+
+        <!-- Reply Section -->
+        <div class="reply-section">
+            <h4><i class="fas fa-reply me-2"></i> Yanıt Gönder</h4>
+
+            @using (Html.BeginForm("Reply", "ContactMessage", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("id", Model.Id)
+
+                <div class="mb-3">
+                    <label for="replyMessage" class="form-label">
+                        <i class="fas fa-paper-plane me-1"></i> Email Yanıtı
+                    </label>
+                    <textarea class="form-control" id="replyMessage" name="replyMessage"
+                              rows="6" placeholder="Kullanıcıya gönderilecek email yanıtı..."></textarea>
+                    <small class="text-muted">
+                        Bu mesaj <strong>@Model.Email</strong> adresine gönderilecektir.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="adminNote" class="form-label">
+                        <i class="fas fa-sticky-note me-1"></i> Admin Notu (İsteğe Bağlı)
+                    </label>
+                    <textarea class="form-control" id="adminNote" name="adminNote"
+                              rows="3" placeholder="Sadece admin panelinde görünen not...">@Model.AdminNote</textarea>
+                    <small class="text-muted">
+                        Bu not sadece admin panelinde görünür, kullanıcıya gönderilmez.
+                    </small>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i> Yanıtı Gönder
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="history.back()">
+                        <i class="fas fa-times me-2"></i> İptal
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Auto-resize textareas
+        document.querySelectorAll('textarea').forEach(function(textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    </script>
+}

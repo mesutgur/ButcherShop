@@ -1,0 +1,514 @@
+﻿
+@{
+    ViewBag.Title = "İletişim";
+}
+
+@section styles {
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, var(--dark-color) 0%, #34495e 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .contact-section {
+            padding: 3rem 0;
+        }
+
+        .contact-info-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: all 0.3s;
+            height: 100%;
+        }
+
+        .contact-info-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .contact-info-box i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .contact-info-box h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+            font-size: 1.2rem;
+        }
+
+        .contact-info-box p {
+            color: var(--secondary-color);
+            margin-bottom: 0;
+            font-size: 0.95rem;
+        }
+
+        .contact-info-box a {
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .contact-info-box a:hover {
+            color: var(--primary-color);
+        }
+
+        /* ✅ FORM VE SIDEBAR AYNI YÜKSEKLİKTE */
+        .contact-row {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .contact-form {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .contact-form h3 {
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 450px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 3rem;
+        }
+
+        /* ✅ SIDEBAR WRAPPER - FLEX YAPISI */
+        .sidebar-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            gap: 1rem;
+        }
+
+        .info-grid {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* İlk kutu (Çalışma Saatleri) - Flex: 1 */
+        .info-grid.working-hours-box {
+            flex: 1;
+        }
+
+        /* İkinci kutu (Sosyal Medya + WhatsApp) - Flex: 1 */
+        .info-grid.social-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-grid h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .info-grid h4 i {
+            color: var(--primary-color);
+        }
+
+        .working-hours {
+            flex: 1;
+        }
+
+        .working-hours .day-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .working-hours .day-row:last-child {
+            border-bottom: none;
+        }
+
+        .working-hours .day {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .working-hours .hours {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .social-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .social-btn {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+
+        .social-btn.facebook { background: #1877f2; }
+        .social-btn.instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+        .social-btn.twitter { background: #1da1f2; }
+        .social-btn.youtube { background: #ff0000; }
+
+        .whatsapp-compact {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .whatsapp-compact i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .whatsapp-compact h5 {
+            margin-bottom: 0.25rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .whatsapp-compact p {
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .whatsapp-compact .btn {
+            background: white;
+            color: #25D366;
+            font-weight: 600;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        .whatsapp-compact .btn:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+        }
+
+        .alert-success {
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+        }
+
+        @@media (max-width: 991px) {
+            .contact-row {
+                flex-direction: column;
+            }
+
+            .sidebar-wrapper {
+                flex-direction: row;
+                height: auto;
+            }
+
+            .info-grid {
+                flex: 1;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .contact-form {
+                padding: 2rem 1.5rem;
+            }
+
+            .map-container {
+                height: 300px;
+            }
+
+            .sidebar-wrapper {
+                flex-direction: column;
+            }
+
+            .social-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-envelope me-2"></i> İletişim</h1>
+        <p class="mb-0">Bize ulaşın, size yardımcı olmaktan mutluluk duyarız</p>
+    </div>
+</div>
+
+<div class="container contact-section">
+    <!-- Contact Info Boxes -->
+    <div class="row mb-5 g-4">
+        <div class="col-lg-4 col-md-6">
+            <div class="contact-info-box">
+                <i class="fas fa-map-marker-alt"></i>
+                <h4>Adres</h4>
+                <p>
+                    Yenidoğan Mahallesi<br>
+                    Atatürk Caddesi No: 123<br>
+                    Adapazarı / Sakarya
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="contact-info-box">
+                <i class="fas fa-phone"></i>
+                <h4>Telefon</h4>
+                <p>
+                    <a href="tel:+905551234567">0555 123 45 67</a><br>
+                    <a href="tel:+902641234567">0264 123 45 67</a>
+                </p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="contact-info-box">
+                <i class="fas fa-envelope"></i>
+                <h4>E-posta</h4>
+                <p>
+                    <a href="mailto:info@kasapdukkan.com">info@kasapdukkan.com</a><br>
+                    <a href="mailto:destek@kasapdukkan.com">destek@kasapdukkan.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-container mb-4">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48348.578615057234!2d30.378879899999998!3d40.7569479!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14ccafe31f55898f%3A0x6e386cfb37004ddf!2sAdapazar%C4%B1%2C%20Sakarya!5e0!3m2!1str!2str!4v1234567890123!5m2!1str!2str"
+                style="width: 100%; height: 100%; border: 0;"
+                allowfullscreen=""
+                loading="lazy">
+        </iframe>
+    </div>
+
+    <!-- ✅ FORM VE SIDEBAR - AYNI YÜKSEKLIKTE -->
+    <div class="row g-4 contact-row">
+        <!-- Contact Form -->
+        <div class="col-lg-8">
+            <div class="contact-form">
+                <h3><i class="fas fa-paper-plane me-2"></i> Mesaj Gönderin</h3>
+
+                @* Success/Error Messages *@
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle me-2"></i>
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-times-circle me-2"></i>
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form id="contactForm" method="post" action="@Url.Action("Contact", "Home")">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Name">Adınız Soyadınız *</label>
+                                <input type="text" class="form-control" id="Name" name="Name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Email">E-posta Adresiniz *</label>
+                                <input type="email" class="form-control" id="Email" name="Email" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Phone">Telefon Numaranız</label>
+                                <input type="tel" class="form-control" id="Phone" name="Phone">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="Subject">Konu</label>
+                                <select class="form-control" id="Subject" name="Subject">
+                                    <option value="">Seçiniz</option>
+                                    <option value="Genel Bilgi">Genel Bilgi</option>
+                                    <option value="Ürün Hakkında">Ürün Hakkında</option>
+                                    <option value="Sipariş">Sipariş</option>
+                                    <option value="Şikayet">Şikayet</option>
+                                    <option value="Öneri">Öneri</option>
+                                    <option value="Diğer">Diğer</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Message">Mesajınız *</label>
+                        <textarea class="form-control" id="Message" name="Message" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom btn-lg w-100" id="submitBtn">
+                        <i class="fas fa-paper-plane me-2"></i> Mesajı Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ✅ SIDEBAR - FORM İLE AYNI YÜKSEKLİKTE -->
+        <div class="col-lg-4">
+            <div class="sidebar-wrapper">
+                <!-- Working Hours -->
+                <div class="info-grid working-hours-box">
+                    <h4><i class="fas fa-clock"></i> Çalışma Saatleri</h4>
+                    <div class="working-hours">
+                        <div class="day-row">
+                            <span class="day">Pazartesi - Cumartesi</span>
+                            <span class="hours">08:00 - 20:00</span>
+                        </div>
+                        <div class="day-row">
+                            <span class="day">Pazar</span>
+                            <span class="hours text-danger">Kapalı</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media + WhatsApp -->
+                <div class="info-grid social-box">
+                    <div class="social-content">
+                        <h4><i class="fas fa-share-alt"></i> Sosyal Medya</h4>
+                        <div class="social-grid">
+                            <a href="#" class="social-btn facebook" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-btn instagram" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-btn twitter" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-btn youtube" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+
+                        <!-- WhatsApp - Kompakt -->
+                        <div class="whatsapp-compact">
+                            <i class="fab fa-whatsapp"></i>
+                            <h5>WhatsApp</h5>
+                            <p class="mb-2">Hızlı iletişim</p>
+                            <a href="https://wa.me/905551234567" target="_blank" class="btn">
+                                <i class="fab fa-whatsapp me-1"></i> Mesaj Gönder
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            $('#contactForm').on('submit', function () {
+                var $btn = $('#submitBtn');
+                $btn.prop('disabled', true)
+                    .html('<i class="fas fa-spinner fa-spin me-2"></i> Gönderiliyor...');
+            });
+        });
+    </script>
+}

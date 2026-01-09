@@ -1,0 +1,272 @@
+﻿@model List<ButcherShop.Entity.Entities.ProductImage>
+@{
+    ViewBag.Title = "Görsel Yönetimi";
+    var product = ViewBag.Product as ButcherShop.Entity.Entities.Product;
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")">Ürünler</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Details", "Product", new { id = product.Id })">@product.Name</a></li>
+    <li class="breadcrumb-item active">Görsel Yönetimi</li>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-images"></i> @product.Name - Görseller
+                </h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Details", "Product", new { id = product.Id })" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left"></i> Ürüne Dön
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (Model != null && Model.Any())
+                {
+                    <div class="row" id="imageGallery">
+                        @foreach (var image in Model)
+                        {
+                            <div class="col-md-6 mb-3" data-image-id="@image.Id">
+                                <div class="card @(image.IsMainImage ? "border-primary" : "")">
+                                    <img src="@image.ImageUrl" class="card-img-top" alt="Ürün Görseli" style="height: 250px; object-fit: cover;" />
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                @if (image.IsMainImage)
+                                                {
+                                                    <span class="badge badge-primary">
+                                                        <i class="fas fa-star"></i> Ana Görsel
+                                                    </span>
+                                                }
+                                                <span class="badge badge-secondary">
+                                                    Sıra: @image.DisplayOrder
+                                                </span>
+                                            </div>
+                                            <div class="btn-group">
+                                                @if (!image.IsMainImage)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-warning set-main" data-id="@image.Id" title="Ana Görsel Yap">
+                                                        <i class="fas fa-star"></i>
+                                                    </button>
+                                                }
+                                                <button type="button" class="btn btn-sm btn-danger delete-image" data-id="@image.Id" title="Sil">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="small">Sıralama:</label>
+                                            <input type="number" class="form-control form-control-sm order-input"
+                                                   data-id="@image.Id"
+                                                   value="@image.DisplayOrder"
+                                                   min="1" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-images fa-3x mb-3"></i>
+                        <p>Henüz görsel eklenmemiş. Sağdaki formu kullanarak görsel ekleyebilirsiniz.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-plus"></i> Yeni Görsel Ekle
+                </h3>
+            </div>
+            @using (Html.BeginForm("Add", "ProductImage", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="productId" value="@product.Id" />
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <label>Görsel URL *</label>
+                        <input type="text" name="imageUrl" class="form-control" placeholder="https://example.com/image.jpg" required id="imageUrlInput" />
+                        <small class="form-text text-muted">Görsel URL'sini buraya yapıştırın</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Önizleme</label>
+                        <div id="imagePreview" class="text-center" style="display:none;">
+                            <img id="previewImg" src="" class="img-thumbnail" style="max-height: 200px;" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sıralama</label>
+                        <input type="number" name="displayOrder" class="form-control" value="@((Model?.Count ?? 0) + 1)" min="1" />
+                        <small class="form-text text-muted">Görsellerin görüntülenme sırası</small>
+                    </div>
+
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="isMainImage" name="isMainImage" value="true" @(Model == null || !Model.Any() ? "checked" : "") />
+                        <label class="custom-control-label" for="isMainImage">
+                            <strong>Ana Görsel</strong>
+                            <br /><small class="text-muted">Ürün listesinde gösterilir</small>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-plus"></i> Görsel Ekle
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle"></i> Bilgi
+                </h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i>
+                        Birden fazla görsel ekleyebilirsiniz
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-star text-warning"></i>
+                        Sadece bir görsel "Ana Görsel" olabilir
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-sort text-info"></i>
+                        Sıralama numarasını değiştirerek görsellerin sırasını ayarlayın
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-image text-primary"></i>
+                        Ana görsel ürün listesinde görünür
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Görsel Önizleme
+            $('#imageUrlInput').on('input', function () {
+                var url = $(this).val();
+                if (url) {
+                    $('#previewImg').attr('src', url);
+                    $('#imagePreview').show();
+                } else {
+                    $('#imagePreview').hide();
+                }
+            });
+
+            // Ana Görsel Yapma
+            $('.set-main').on('click', function () {
+                var imageId = $(this).data('id');
+
+                if (confirm('Bu görseli ana görsel yapmak istediğinize emin misiniz?')) {
+                    $.ajax({
+                        url: '@Url.Action("SetMain")',
+                        type: 'POST',
+                        data: { id: imageId },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                location.reload();
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Bir hata oluştu.');
+                        }
+                    });
+                }
+            });
+
+            // Görsel Silme
+            $('.delete-image').on('click', function () {
+                var imageId = $(this).data('id');
+                var card = $(this).closest('[data-image-id]');
+
+                if (confirm('Bu görseli silmek istediğinize emin misiniz?')) {
+                    $.ajax({
+                        url: '@Url.Action("Delete")',
+                        type: 'POST',
+                        data: { id: imageId },
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                card.fadeOut(300, function () {
+                                    $(this).remove();
+                                    // Eğer hiç görsel kalmadıysa sayfayı yenile
+                                    if ($('#imageGallery [data-image-id]').length === 0) {
+                                        location.reload();
+                                    }
+                                });
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Bir hata oluştu.');
+                        }
+                    });
+                }
+            });
+
+            // Sıralama Güncelleme
+            $('.order-input').on('change', function () {
+                var imageId = $(this).data('id');
+                var newOrder = $(this).val();
+
+                $.ajax({
+                    url: '@Url.Action("UpdateOrder")',
+                    type: 'POST',
+                    data: { id: imageId, displayOrder: newOrder },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function () {
+                        toastr.error('Bir hata oluştu.');
+                    }
+                });
+            });
+        });
+    </script>
+}

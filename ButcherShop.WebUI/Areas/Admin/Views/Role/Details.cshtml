@@ -1,0 +1,105 @@
+﻿@model ButcherShop.WebUI.Areas.Admin.Models.RoleViewModel
+@{
+    ViewBag.Title = "Rol Detayları";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Roller</a></li>
+    <li class="breadcrumb-item active">Detaylar</li>
+}
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Rol Detayları: @Model.Name</h3>
+            </div>
+
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Rol Adı:</dt>
+                    <dd class="col-sm-8"><strong>@Model.Name</strong></dd>
+
+                    <dt class="col-sm-4">Rol ID:</dt>
+                    <dd class="col-sm-8"><code>@Model.Id</code></dd>
+
+                    <dt class="col-sm-4">Kullanıcı Sayısı:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-info">@Model.UserCount Kullanıcı</span>
+                    </dd>
+                </dl>
+
+                <hr />
+
+                <h5>Bu Role Sahip Kullanıcılar</h5>
+                @{
+                    var users = ViewBag.Users as List<ButcherShop.Entity.Entities.AppUser>
+                                ?? new List<ButcherShop.Entity.Entities.AppUser>();
+                }
+
+                @if (users.Any())
+                {
+                    <table class="table table-bordered table-sm">
+                        <thead>
+                            <tr>
+                                <th>Ad Soyad</th>
+                                <th>E-posta</th>
+                                <th>Durum</th>
+                                <th>İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in users)
+                            {
+                                <tr>
+                                    <td>@user.FirstName @user.LastName</td>
+                                    <td>@user.Email</td>
+                                    <td>
+                                        @if (user.IsActive)
+                                        {
+                                            <span class="badge badge-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Pasif</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", "User", new { id = user.Id })" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit"></i> Düzenle
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Bu role sahip kullanıcı bulunmamaktadır.
+                    </div>
+                }
+
+            </div>
+
+            <div class="card-footer">
+                <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Düzenle
+                </a>
+                @if (!new[] { "Admin", "Editor", "Customer" }.Contains(Model.Name))
+                {
+                    <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Sil
+                    </a>
+                }
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+

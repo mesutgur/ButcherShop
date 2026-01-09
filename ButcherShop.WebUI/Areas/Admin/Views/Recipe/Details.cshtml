@@ -1,0 +1,211 @@
+﻿@model ButcherShop.Entity.Entities.Recipe
+@{
+    ViewBag.Title = "Tarif Detayı";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Tarifler</a></li>
+    <li class="breadcrumb-item active">Detay</li>
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@Model.Title</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Edit", new { id = Model.Id })" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <div class="text-center mb-3">
+                        <img src="@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded" style="max-width: 100%;" />
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> @Model.Description
+                    </div>
+                }
+
+                <div class="row mb-3">
+                    <div class="col-md-3 text-center">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h4>@Model.PreparationTime dk</h4>
+                                <p>Hazırlık</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h4>@Model.CookingTime dk</h4>
+                                <p>Pişirme</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h4>@Model.ServingSize</h4>
+                                <p>Kişilik</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h4>@Model.DifficultyLevel</h4>
+                                <p>Zorluk</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+
+                <h5><i class="fas fa-shopping-basket"></i> Malzemeler</h5>
+
+                @if (Model.RecipeProducts != null && Model.RecipeProducts.Any())
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var rp in Model.RecipeProducts.Where(x => x.Product != null))
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <strong>@rp.Product.Name</strong>
+                                <span class="badge badge-primary badge-pill">@rp.Quantity</span>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Ingredients))
+                {
+                    <h6>Diğer Malzemeler:</h6>
+                    <div class="alert alert-light">
+                        @Html.Raw(Model.Ingredients.Replace("\n", "<br />"))
+                    </div>
+                }
+
+                <hr />
+
+                <h5><i class="fas fa-list-ol"></i> Yapılışı</h5>
+                <div class="card card-outline card-primary">
+                    <div class="card-body">
+                        @Html.Raw(Model.Instructions.Replace("\n", "<br />"))
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Listeye Dön
+                </a>
+                <a href="@Url.Action("Delete", new { id = Model.Id })" class="btn btn-danger float-right">
+                    <i class="fas fa-trash"></i> Sil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Tarif Bilgileri</h3>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-5">Yazar:</dt>
+                    <dd class="col-sm-7">
+                        @if (Model.Author != null)
+                        {
+                            <span class="badge badge-info">@Model.Author.UserName</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-5">Görüntülenme:</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge badge-primary">
+                            <i class="fas fa-eye"></i> @Model.ViewCount
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-5">Durum:</dt>
+                    <dd class="col-sm-7">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge badge-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-secondary">Pasif</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-5">Oluşturma:</dt>
+                    <dd class="col-sm-7">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    @if (Model.ModifiedDate.HasValue)
+                    {
+                        <dt class="col-sm-5">Güncelleme:</dt>
+                        <dd class="col-sm-7">@Model.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm")</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">İstatistikler</h3>
+            </div>
+            <div class="card-body">
+                <div class="progress-group">
+                    <span class="progress-text">Toplam Süre</span>
+                    <span class="float-right"><b>@(Model.PreparationTime + Model.CookingTime)</b> dakika</span>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-primary" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <div class="progress-group">
+                    <span class="progress-text">Hazırlık Süresi</span>
+                    <span class="float-right">
+                        <b>@Model.PreparationTime</b> / @(Model.PreparationTime + Model.CookingTime) dk
+                    </span>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-info" style="width: @((Model.PreparationTime * 100.0 / (Model.PreparationTime + Model.CookingTime)))"></div>
+                    </div>
+                </div>
+
+                <div class="progress-group">
+                    <span class="progress-text">Pişirme Süresi</span>
+                    <span class="float-right">
+                        <b>@Model.CookingTime</b> / @(Model.PreparationTime + Model.CookingTime) dk
+                    </span>
+                    <div class="progress progress-sm">
+                        <div class="progress-bar bg-success" style="width: @((Model.CookingTime * 100.0 / (Model.PreparationTime + Model.CookingTime)))"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

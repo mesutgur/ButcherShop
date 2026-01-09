@@ -1,0 +1,173 @@
+﻿@model List<ButcherShop.WebUI.Areas.Admin.Models.UserViewModel>
+@{
+    ViewBag.Title = "Kullanıcı Yönetimi";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item active">Kullanıcılar</li>
+}
+
+
+<div style="display:none;">@Html.AntiForgeryToken()</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <i class="fas fa-exclamation-circle"></i> @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Kullanıcı Listesi</h3>
+                <div class="card-tools">
+                    <a href="@Url.Action("Create")" class="btn btn-success btn-sm">
+                        <i class="fas fa-user-plus"></i> Yeni Kullanıcı Ekle
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>Ad Soyad</th>
+                            <th>E-posta</th>
+                            <th>Telefon</th>
+                            <th>Şehir</th>
+                            <th>Roller</th>
+                            <th style="width: 80px;">Durum</th>
+                            <th style="width: 200px;">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var user in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@user.FirstName @user.LastName</strong><br />
+                                        <small class="text-muted">@user.UserName</small>
+                                    </td>
+                                    <td>@user.Email</td>
+                                    <td>@(string.IsNullOrEmpty(user.PhoneNumber) ? "-" : user.PhoneNumber)</td>
+                                    <td>@(string.IsNullOrEmpty(user.City) ? "-" : user.City)</td>
+                                    <td>
+                                        @if (user.Roles != null && user.Roles.Any())
+                                        {
+                                            foreach (var role in user.Roles)
+                                            {
+                                                <span class="badge badge-info mr-1">@role</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Rol Yok</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm toggle-status @(user.IsActive ? "btn-success" : "btn-secondary")"
+                                                data-id="@user.Id">
+                                            @if (user.IsActive)
+                                            {
+                                                <i class="fas fa-check"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-times"></i>
+                                            }
+                                        </button>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-primary btn-sm" title="Detay">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-info btn-sm" title="Düzenle">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("ChangePassword", new { id = user.Id })" class="btn btn-warning btn-sm" title="Şifre Değiştir">
+                                                <i class="fas fa-key"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", new { id = user.Id })" class="btn btn-danger btn-sm" title="Sil">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle"></i> Henüz kullanıcı eklenmemiş.
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+            $(document).ready(function () {
+                // DataTable
+                $('#userTable').DataTable({
+                    "paging": true,
+                    "lengthChange": true,
+                    "searching": true,
+                    "ordering": true,
+                    "info": true,
+                    "autoWidth": false,
+                    "responsive": true,
+                    "language": {
+                        "url": "https://cdn.datatables.net/plug-ins/1.10.24/i18n/Turkish.json"
+                    }
+                });
+
+                // Toggle Status
+                $('.toggle-status').on('click', function () {
+                    var btn = $(this);
+                    var userId = btn.data('id');
+
+                    $.ajax({
+                        url: '@Url.Action("ToggleStatus")',
+                        type: 'POST',
+                        data: { id: userId, __RequestVerificationToken: antiForgeryToken },
+                        success: function (response) {
+                            if (response.success) {
+                                if (response.isActive) {
+                                    btn.removeClass('btn-secondary').addClass('btn-success');
+                                    btn.html('<i class="fas fa-check"></i>');
+                                } else {
+                                    btn.removeClass('btn-success').addClass('btn-secondary');
+                                    btn.html('<i class="fas fa-times"></i>');
+                                }
+                                toastr.success('Durum güncellendi.');
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        }
+                    });
+                });
+            });
+    </script>
+}

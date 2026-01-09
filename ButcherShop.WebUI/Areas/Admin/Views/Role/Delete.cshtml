@@ -1,0 +1,74 @@
+﻿@model ButcherShop.WebUI.Areas.Admin.Models.RoleViewModel
+@{
+    ViewBag.Title = "Rol Sil";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Roller</a></li>
+    <li class="breadcrumb-item active">Sil</li>
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card card-danger">
+            <div class="card-header">
+                <h3 class="card-title">Rol Silme Onayı</h3>
+            </div>
+
+            <div class="card-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Dikkat!</strong> Bu rolü silmek üzeresiniz. Bu işlem geri alınamaz.
+                </div>
+
+                @if (new[] { "Admin", "Editor", "Customer" }.Contains(Model.Name))
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Uyarı:</strong> Bu bir sistem rolüdür ve silinemez.
+                    </div>
+                }
+
+                @if (Model.UserCount > 0)
+                {
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Uyarı:</strong> Bu role sahip <strong>@Model.UserCount</strong> kullanıcı bulunmaktadır.
+                        Rolü silmeden önce kullanıcıları başka rollere taşımanız gerekmektedir.
+                    </div>
+                }
+
+                <dl class="row">
+                    <dt class="col-sm-4">Rol Adı:</dt>
+                    <dd class="col-sm-8"><strong>@Model.Name</strong></dd>
+
+                    <dt class="col-sm-4">Kullanıcı Sayısı:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge badge-info">@Model.UserCount Kullanıcı</span>
+                    </dd>
+                </dl>
+            </div>
+
+            <div class="card-footer">
+                @using (Html.BeginForm("Delete", "Role", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    if (!new[] { "Admin", "Editor", "Customer" }.Contains(Model.Name) && Model.UserCount == 0)
+                    {
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Bu rolü silmek istediğinizden emin misiniz?');">
+                            <i class="fas fa-trash"></i> Evet, Sil
+                        </button>
+                    }
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> İptal
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+

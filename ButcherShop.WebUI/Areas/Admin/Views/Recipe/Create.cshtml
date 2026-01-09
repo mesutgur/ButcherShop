@@ -1,0 +1,178 @@
+﻿@model ButcherShop.Entity.Entities.Recipe
+@{
+    ViewBag.Title = "Yeni Tarif Ekle";
+}
+
+@section Breadcrumb {
+    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Dashboard")">Dashboard</a></li>
+    <li class="breadcrumb-item"><a href="@Url.Action("Index")">Tarifler</a></li>
+    <li class="breadcrumb-item active">Yeni Tarif</li>
+}
+
+<!--
+       * Dinamik Ürün Ekleme: "Ürün Ekle" butonu ile sınırsız ürün eklenebilir
+       * Miktar Girişi: Her ürün için miktar (500 gr, 1 kg gibi)
+       * Zorluk Seviyesi: Dropdown ile Kolay/Orta/Zor
+       * Süre Bilgileri: Hazırlık ve pişirme süresi
+-->
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Tarif Bilgileri</h3>
+            </div>
+
+            @using (Html.BeginForm("Create", "Recipe", FormMethod.Post, new { @class = "form-horizontal" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="card-body">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Title, "Tarif Başlığı *")
+                                @Html.TextBoxFor(model => model.Title, new { @class = "form-control", placeholder = "Örn: Izgara Dana Bonfile", required = "required" })
+                                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ImageUrl, "Görsel URL")
+                                @Html.TextBoxFor(model => model.ImageUrl, new { @class = "form-control", placeholder = "https://..." })
+                                @Html.ValidationMessageFor(model => model.ImageUrl, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, "Kısa Açıklama")
+                        @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = 2, placeholder = "Tarif hakkında kısa bilgi..." })
+                        @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.PreparationTime, "Hazırlık Süresi (dk)")
+                                @Html.TextBoxFor(model => model.PreparationTime, new { @class = "form-control", type = "number", min = "0", value = "15" })
+                                @Html.ValidationMessageFor(model => model.PreparationTime, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.CookingTime, "Pişirme Süresi (dk)")
+                                @Html.TextBoxFor(model => model.CookingTime, new { @class = "form-control", type = "number", min = "0", value = "30" })
+                                @Html.ValidationMessageFor(model => model.CookingTime, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ServingSize, "Kaç Kişilik")
+                                @Html.TextBoxFor(model => model.ServingSize, new { @class = "form-control", type = "number", min = "1", value = "4" })
+                                @Html.ValidationMessageFor(model => model.ServingSize, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.DifficultyLevel, "Zorluk Seviyesi")
+                                @Html.DropDownListFor(model => model.DifficultyLevel,
+                                    new SelectList(new[] { "Kolay", "Orta", "Zor" }),
+                                    "-- Seçiniz --",
+                                    new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.DifficultyLevel, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="form-group">
+                        <label>Malzemeler ve Miktarlar</label>
+                        <div id="productList">
+                            <div class="row product-row mb-2">
+                                <div class="col-md-8">
+                                    <select name="selectedProducts" class="form-control">
+                                        <option value="">-- Ürün Seçin --</option>
+                                        @foreach (var item in ViewBag.Products as MultiSelectList)
+                                        {
+                                            <option value="@item.Value">@item.Text</option>
+                                        }
+                                    </select>
+
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" name="quantities" class="form-control" placeholder="Miktar (örn: 500 gr)" />
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="button" class="btn btn-danger btn-sm remove-product" style="display:none;">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-success" id="addProduct">
+                            <i class="fas fa-plus"></i> Ürün Ekle
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Ingredients, "Diğer Malzemeler")
+                        @Html.TextAreaFor(model => model.Ingredients, new { @class = "form-control", rows = 5, placeholder = "Her satıra bir malzeme yazın..." })
+                        @Html.ValidationMessageFor(model => model.Ingredients, "", new { @class = "text-danger" })
+                        <small class="form-text text-muted">Kasaptan alınmayan diğer malzemeler (soğan, sarımsak, baharat vb.)</small>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Instructions, "Yapılışı *")
+                        @Html.TextAreaFor(model => model.Instructions, new { @class = "form-control", rows = 8, placeholder = "Tarifin adım adım yapılışını yazın...", required = "required" })
+                        @Html.ValidationMessageFor(model => model.Instructions, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="custom-control custom-switch">
+                        @Html.CheckBoxFor(model => model.IsActive, new { @class = "custom-control-input", id = "isActiveSwitch", @checked = "checked" })
+                        <label class="custom-control-label" for="isActiveSwitch">
+                            <strong>Aktif</strong> (Sitede yayınlansın)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Kaydet
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> İptal
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Ürün ekleme
+            $('#addProduct').on('click', function () {
+                var newRow = $('.product-row:first').clone();
+                newRow.find('select').val('');
+                newRow.find('input').val('');
+                newRow.find('.remove-product').show();
+                $('#productList').append(newRow);
+            });
+
+            // Ürün silme
+            $(document).on('click', '.remove-product', function () {
+                $(this).closest('.product-row').remove();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,246 @@
+﻿@model List<ButcherShop.Entity.Entities.ContactMessage>
+@{
+    ViewBag.Title = "İletişim Mesajları";
+    var filter = ViewBag.Filter as string ?? "all";
+    var unreadCount = ViewBag.UnreadCount as int? ?? 0;
+}
+
+@section styles {
+    <style>
+        .message-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border-left: 4px solid #dee2e6;
+        }
+
+            .message-card:hover {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transform: translateY(-2px);
+            }
+
+            .message-card.unread {
+                border-left-color: #dc3545;
+                background: #fff5f5;
+            }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .message-info h5 {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+        }
+
+        .message-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .message-body {
+            margin-bottom: 1rem;
+            color: #495057;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-tabs {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+            .filter-tabs .nav-link {
+                color: #6c757d;
+                border: none;
+                padding: 0.75rem 1.5rem;
+                font-weight: 500;
+            }
+
+                .filter-tabs .nav-link.active {
+                    color: #dc3545;
+                    border-bottom: 2px solid #dc3545;
+                    margin-bottom: -2px;
+                }
+
+        .badge-new {
+            background: #dc3545;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+            .empty-state i {
+                font-size: 4rem;
+                margin-bottom: 1rem;
+                opacity: 0.3;
+            }
+    </style>
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2><i class="fas fa-envelope me-2"></i> İletişim Mesajları</h2>
+            <p class="text-muted mb-0">Gelen mesajları görüntüleyin ve yanıtlayın</p>
+        </div>
+        @if (unreadCount > 0)
+        {
+            <div class="badge-new">
+                @unreadCount Okunmamış Mesaj
+            </div>
+        }
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-times-circle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter Tabs -->
+    <ul class="nav filter-tabs">
+        <li class="nav-item">
+            <a class="nav-link @(filter == "all" ? "active" : "")"
+               href="@Url.Action("Index", new { filter = "all" })">
+                <i class="fas fa-list me-2"></i> Tümü (@Model.Count)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filter == "unread" ? "active" : "")"
+               href="@Url.Action("Index", new { filter = "unread" })">
+                <i class="fas fa-envelope me-2"></i> Okunmamış (@unreadCount)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(filter == "read" ? "active" : "")"
+               href="@Url.Action("Index", new { filter = "read" })">
+                <i class="fas fa-envelope-open me-2"></i> Okunmuş (@(Model.Count - unreadCount))
+            </a>
+        </li>
+    </ul>
+
+    <!-- Messages List -->
+    @if (Model.Any())
+    {
+        foreach (var message in Model)
+        {
+            <div class="message-card @(!message.IsRead ? "unread" : "")">
+                <div class="message-header">
+                    <div class="message-info">
+                        <h5>
+                            @message.Name
+                            @if (!message.IsRead)
+                            {
+                                <span class="badge bg-danger ms-2">Yeni</span>
+                            }
+                        </h5>
+                        <div class="message-meta">
+                            <i class="fas fa-envelope me-1"></i> @message.Email
+                            @if (!string.IsNullOrEmpty(message.Phone))
+                            {
+                                <span class="ms-3">
+                                    <i class="fas fa-phone me-1"></i> @message.Phone
+                                </span>
+                            }
+                            <span class="ms-3">
+                                <i class="far fa-clock me-1"></i> @message.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(message.Subject))
+                {
+                    <div class="mb-2">
+                        <strong>Konu:</strong> @message.Subject
+                    </div>
+                }
+
+                <div class="message-body">
+                    @{
+                        var preview = message.Message.Length > 150
+                            ? message.Message.Substring(0, 150) + "..."
+                            : message.Message;
+                    }
+                    @preview
+                </div>
+
+                @if (!string.IsNullOrEmpty(message.AdminNote))
+                {
+                    <div class="alert alert-info mb-3">
+                        <small><strong>Admin Notu:</strong> @message.AdminNote</small>
+                    </div>
+                }
+
+                <div class="message-actions">
+                    <a href="@Url.Action("Details", new { id = message.Id })"
+                       class="btn btn-sm btn-primary">
+                        <i class="fas fa-eye me-1"></i> Görüntüle & Yanıtla
+                    </a>
+
+                    @using (Html.BeginForm("Delete", "ContactMessage", new { id = message.Id }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Bu mesajı silmek istediğinizden emin misiniz?');" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash me-1"></i> Sil
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h4>Mesaj Bulunmuyor</h4>
+            <p>
+                @if (filter == "unread")
+                {
+                    <text>Okunmamış mesaj yok.</text>
+                }
+                else if (filter == "read")
+                {
+                    <text>Okunmuş mesaj yok.</text>
+                }
+                else
+                {
+                    <text>Henüz hiç mesaj alınmadı.</text>
+                }
+            </p>
+        </div>
+    }
+</div>
+
