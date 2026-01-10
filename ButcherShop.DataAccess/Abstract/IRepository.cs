@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using ButcherShop.Entity.Entities;
 
 namespace ButcherShop.DataAccess.Abstract
 {
-    // where T : class: Generic tip sadece class olabilir.
-    public interface IRepository<T> where T : class
+    // where T : BaseEntity: Generic tip BaseEntity'den türetilmiş olmalı (soft delete için)
+    public interface IRepository<T> where T : BaseEntity
     {
         // Temel CRUD operasyonları
         void Add(T entity);

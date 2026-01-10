@@ -257,7 +257,7 @@ namespace ButcherShop.WebUI.Areas.Admin.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Reply email error: {ex.Message}");
+                // Log error in production with proper logging framework
                 return false;
             }
         }

@@ -29,44 +29,21 @@ namespace ButcherShop.Business.Concrete
 
         public void Add(ContactMessage entity)
         {
-            try
-            {
-                entity.CreatedDate = DateTime.Now;
-                entity.IsActive = true;
-                entity.IsDeleted = false;
-                entity.IsRead = false;
-
-                // ✅ Debug için
-                System.Diagnostics.Debug.WriteLine($"Adding contact message from: {entity.Name}");
-
-                _repository.Add(entity);
-
-                // ✅ Debug için
-                System.Diagnostics.Debug.WriteLine($"Contact message added successfully");
-            }
-            catch (Exception ex)
-            {
-                // ✅ Hatayı yakala
-                System.Diagnostics.Debug.WriteLine($"Error in ContactMessageManager.Add: {ex.Message}");
-                throw;
-            }
+            // CreatedDate, IsActive, IsDeleted are now set automatically by DbContext.SaveChanges()
+            entity.IsRead = false;
+            _repository.Add(entity);
         }
 
         public void Update(ContactMessage entity)
         {
-            entity.ModifiedDate = DateTime.Now;
+            // ModifiedDate is now set automatically by DbContext.SaveChanges()
             _repository.Update(entity);
         }
 
         public void Delete(int id)
         {
-            var entity = _repository.GetById(id);
-            if (entity != null)
-            {
-                entity.IsDeleted = true;
-                entity.ModifiedDate = DateTime.Now;
-                _repository.Update(entity);
-            }
+            // Soft delete is now handled by RepositoryBase
+            _repository.Delete(id);
         }
 
         public void MarkAsRead(int id)
@@ -76,7 +53,6 @@ namespace ButcherShop.Business.Concrete
             {
                 entity.IsRead = true;
                 entity.ReadDate = DateTime.Now;
-                entity.ModifiedDate = DateTime.Now;
                 _repository.Update(entity);
             }
         }

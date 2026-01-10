@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using ButcherShop.Entity.Entities;
 
 namespace ButcherShop.Business.Abstract
 {
-    public interface IServiceBase<T> where T : class
+    public interface IServiceBase<T> where T : BaseEntity
     {
         // Temel CRUD operasyonları
         void Add(T entity);

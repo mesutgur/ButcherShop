@@ -12,12 +12,11 @@ namespace ButcherShop.DataAccess.Context
     // Identity kullanıcı yönetimi için
     public class ButcherShopContext : IdentityDbContext<AppUser>
     {
-        // ButcherShopConnection : Web.config'de tanımlayacağımız connection string adı
-        // public ButcherShopContext() : base("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ButcherShopDB;Integrated Security=True;MultipleActiveResultSets=True")
-        public ButcherShopContext() : base("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ButcherShopDB;Integrated Security=True;MultipleActiveResultSets=True")
+        // Connection string name defined in Web.config
+        public ButcherShopContext() : base("ButcherShopConnection")
         {
-            Configuration.LazyLoadingEnabled = false; // ✅ Lazy Loading kapat
-            Configuration.ProxyCreationEnabled = false; // ✅ Proxy oluşturmayı kapat
+            Configuration.LazyLoadingEnabled = false; // Disable lazy loading for better performance
+            Configuration.ProxyCreationEnabled = false; // Disable proxy creation
         }
 
         // DbSet tanımlamaları (Her entity için bir tablo)
@@ -107,11 +106,38 @@ namespace ButcherShop.DataAccess.Context
                 .WithMany(p => p.RecipeProducts)
                 .HasForeignKey(rp => rp.ProductId)
                 .WillCascadeOnDelete(false);
+
+            // Global Query Filters for Soft Delete
+            // Note: EF6 doesn't support global query filters directly like EF Core
+            // So we need to handle IsDeleted filtering in repository layer
+            // This is already handled in GetAll methods by filtering IsDeleted = false
         }
 
         public static ButcherShopContext Create()
         {
             return new ButcherShopContext();
+        }
+
+        // SaveChanges override - CreatedDate ve ModifiedDate otomasyonu
+        public override int SaveChanges()
+        {
+            var entries = ChangeTracker.Entries<BaseEntity>();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedDate = DateTime.Now;
+                    entry.Entity.IsActive = true;
+                    entry.Entity.IsDeleted = false;
+                }
+                else if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.ModifiedDate = DateTime.Now;
+                }
+            }
+
+            return base.SaveChanges();
         }
     }
 }

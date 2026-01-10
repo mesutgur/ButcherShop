@@ -93,34 +93,6 @@ namespace ButcherShop.WebUI.Areas.Admin.Controllers
         }
 
         // POST: Admin/Product/Edit/5
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Edit(Product product)
-        //{
-        //    try
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            _productService.Update(product);
-        //            TempData["SuccessMessage"] = "Ürün başarıyla güncellendi.";
-        //            return RedirectToAction("Index");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["ErrorMessage"] = "Hata: " + ex.Message;
-        //    }
-
-        //    ViewBag.Categories = new SelectList(
-        //        _categoryService.GetActiveCategories(),
-        //        "Id",
-        //        "Name",
-        //        product.CategoryId
-        //    );
-        //    return View(product);
-        //}
-
-        // POST: Admin/Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(Product product)

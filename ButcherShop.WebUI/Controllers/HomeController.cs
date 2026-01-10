@@ -12,39 +12,23 @@ namespace ButcherShop.WebUI.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IRecipeService _recipeService;
-        private readonly IContactMessageService _contactMessageService; // ✅ EKLE
+        private readonly IContactMessageService _contactMessageService;
 
         public HomeController(
             ICategoryService categoryService,
             IProductService productService,
             IRecipeService recipeService,
-            IContactMessageService contactMessageService) // ✅ EKLE
+            IContactMessageService contactMessageService)
         {
             _categoryService = categoryService;
             _productService = productService;
             _recipeService = recipeService;
-            _contactMessageService = contactMessageService; // ✅ EKLE
+            _contactMessageService = contactMessageService;
         }
-
-        //public ActionResult Index()
-        //{
-        //    ViewBag.FeaturedProducts = _productService.GetFeaturedProducts().Take(6).ToList();
-        //    ViewBag.Categories = _categoryService.GetActiveCategories();
-        //    ViewBag.RecentRecipes = _recipeService.GetRecentRecipes(3);
-        //    return View();
-        //}
 
         public ActionResult Index()
         {
-            var categories = _categoryService.GetActiveCategories();
-
-            // ✅ DEBUG: Console'a yazdır
-            foreach (var cat in categories)
-            {
-                System.Diagnostics.Debug.WriteLine($"Kategori: {cat.Name}, ImageUrl: {cat.ImageUrl}");
-            }
-
-            ViewBag.Categories = categories;
+            ViewBag.Categories = _categoryService.GetActiveCategories();
             ViewBag.FeaturedProducts = _productService.GetFeaturedProducts().Take(6).ToList();
             ViewBag.RecentRecipes = _recipeService.GetRecentRecipes(3);
             return View();
@@ -63,7 +47,7 @@ namespace ButcherShop.WebUI.Controllers
             return View();
         }
 
-        // POST: Home/Contact - ✅ BU METODU EKLE
+        // POST: Home/Contact
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Contact(ContactFormModel model)
@@ -76,7 +60,6 @@ namespace ButcherShop.WebUI.Controllers
 
             try
             {
-                // ✅ BURAYA BREAKPOINT KOYUN
                 var contactMessage = new ContactMessage
                 {
                     Name = model.Name,
@@ -86,11 +69,7 @@ namespace ButcherShop.WebUI.Controllers
                     Message = model.Message
                 };
 
-                // ✅ BURAYA BREAKPOINT KOYUN - Add çalışıyor mu?
                 _contactMessageService.Add(contactMessage);
-
-                // ✅ BURAYA BREAKPOINT KOYUN - Kayıt başarılı mı?
-                System.Diagnostics.Debug.WriteLine($"Message saved with ID: {contactMessage.Id}");
 
                 // Email gönder
                 bool emailSent = EmailHelper.SendContactEmail(
@@ -115,11 +94,7 @@ namespace ButcherShop.WebUI.Controllers
             }
             catch (System.Exception ex)
             {
-                // ✅ HATA MESAJINI GÖRMEK İÇİN
-                System.Diagnostics.Debug.WriteLine($"Contact form error: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-
-                TempData["Error"] = $"❌ Hata: {ex.Message}";
+                TempData["Error"] = "❌ Bir hata oluştu. Lütfen daha sonra tekrar deneyin.";
                 return View(model);
             }
         }

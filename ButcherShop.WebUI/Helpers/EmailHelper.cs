@@ -96,7 +96,7 @@ namespace ButcherShop.WebUI.Helpers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Email hatası: {ex.Message}");
+                // Log error in production with proper logging framework
                 return false;
             }
         }
